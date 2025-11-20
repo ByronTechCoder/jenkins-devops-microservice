@@ -1,6 +1,11 @@
 
 pipeline {
-	agent { docker { image 'maven:3.8.1-jdk-11' args '-v /var/run/docker.sock:/var/run/docker.sock' } }
+	agent {
+		docker {
+			image 'maven:3.8.1-jdk-11'
+			args '-v /var/run/docker.sock:/var/run/docker.sock'
+		}
+	}
 	environment {
 		DOCKER_HOST = 'unix:///var/run/docker.sock'
 	}
