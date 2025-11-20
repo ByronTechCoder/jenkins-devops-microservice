@@ -2,7 +2,7 @@
 pipeline {
 	agent {
 		docker {
-			image 'maven:3.8.1-jdk-11'
+			image 'jenkins-maven-docker:latest'
 			args '-v /var/run/docker.sock:/var/run/docker.sock'
 		}
 	}
@@ -12,15 +12,9 @@ pipeline {
 	stages {
 		stage('Prepare') {
 			steps {
-				sh '''
-				set -e
-				# Install docker CLI in the agent if it's not present (Debian-based maven image)
-				if ! command -v docker >/dev/null 2>&1; then
-				  echo "Installing docker client inside agent..."
-				  apt-get update && apt-get install -y docker.io || true
-				fi
-				docker --version || true
-				'''
+				script {
+					sh 'docker --version'
+				}
 			}
 		}
 		stage('Build') {
