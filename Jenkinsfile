@@ -1,11 +1,13 @@
 
 pipeline {
-	agent {
+	agent any 
+	//agent {
+		
 		//docker {
 			//image 'jenkins-maven-docker:latest'
 			//args '-v /var/run/docker.sock:/var/run/docker.sock'
 		//}
-	}
+	//}
 	environment {
 	//	DOCKER_HOST = 'unix:///var/run/docker.sock'
 
