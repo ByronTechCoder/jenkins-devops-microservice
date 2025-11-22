@@ -17,7 +17,7 @@ pipeline {
 	}
 	stages {
 
-		stage('Build') {
+		stage('Checkout') {
 			steps {
 				sh 'mvn --version'
 				sh 'docker version'
@@ -29,19 +29,48 @@ pipeline {
 				echo "BUILD_URL $env.BUILD_URL"
 			}
 		}
-		 stage('Test') {
+		 stage('Compile') {
 			steps {
-				echo "Test"
+				sh 'mvn clean compile'
+			}
+		 }
+
+		stage('Test') {
+			steps {
+				sh 'mvn test'
 			}
 		 }
 		 stage('Integration Test') {
 			steps {
-				echo "Integration Test"
+				sh "mvn failsafe:integration-test failsafe:verify"
 			}
 
 		   
 	 }
-  	 } 
+		 stage('Build Docker Image') {
+			steps{ 
+				script {
+					dockerImage = docker.build("byroncoder/currency-exchange-devops:${env.BUILD_TAG}")
+				}
+			}
+			} 
+		  stage ('Push Docker Image') {
+				steps{
+					script{
+						docker.withRegistry('https://registry.hub.docker.com', 'dockerHub') {
+								dockerImage.push();
+							    dockerImage.push('latest');
+							}
+						}
+					
+				}
+		  }
+		   stage('Package') {
+			steps {
+				steps {
+					sh 'mvn package -DskipTests'
+				}
+			}
 	 post {
 		always {
 			echo "This will always run"
